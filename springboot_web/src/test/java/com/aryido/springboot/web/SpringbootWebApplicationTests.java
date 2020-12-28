@@ -1,4 +1,4 @@
-package com.aryido.springboot_web;
+package com.aryido.springboot.web;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -8,7 +8,7 @@ class SpringbootWebApplicationTests {
 
 	@Test
 	void contextLoads() {
-
+		System.out.println("Starting unit testing...");
 	}
 
 }
