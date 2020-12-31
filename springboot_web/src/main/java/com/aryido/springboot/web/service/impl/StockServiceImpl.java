@@ -43,23 +43,31 @@ public class StockServiceImpl implements IStockService {
         Optional<Stock> optionalStock = stockDAO.findById(stockSymbol);
         if (optionalStock.isEmpty()) {
             throw new NoDataException(stockSymbol);
-        } else {
-            Stock stock = optionalStock.get();
-            StockVO stockVO = transformEntityToVO(stock);
-            return stockVO;
         }
+        Stock stock = optionalStock.get();
+        StockVO stockVO = transformEntityToVO(stock);
+        return stockVO;
     }
 
     @Override
     public StockVO addData(StockVO stockVO) {
         if (isDataFormatIncorrect(stockVO)) {
             throw new DataFormatException(stockVO);
-        } else {
-            Stock stock = transformVOtoEntity(stockVO);
-            stockDAO.save(stock);
-            System.out.println(stock);
-            return stockVO;
         }
+        if (stockDAO.findById(stockVO.getStockSymbol()).isPresent()) {
+            throw new ConflictException(stockVO);
+        }
+
+        Stock stock = transformVOtoEntity(stockVO);
+        try {
+            stockDAO.save(stock);
+        } catch (Exception e) {
+            throw new RuntimeException("add error");
+        }
+        Stock newStock = stockDAO.findById(stock.getStockSymbol()).get();
+        StockVO newStockVO = transformEntityToVO(newStock);
+        return newStockVO;
+
     }
 
     @Override
@@ -67,22 +75,25 @@ public class StockServiceImpl implements IStockService {
         if (isDataFormatIncorrect(stockVO)) {
             throw new DataFormatException(stockVO);
         }
-
         Optional<Stock> optionalStock = stockDAO.findById(stockVO.getStockSymbol());
         if (optionalStock.isEmpty()) {
             throw new NoDataException(stockVO.getStockSymbol());
-        } else {
-            Stock oldStock = optionalStock.get();
-            String dataBaseCompanyName=oldStock.getCompanyName();
-            String inputCompanyName = stockVO.getCompanyName();
-            if(isDataConflict(dataBaseCompanyName, inputCompanyName)){
-                throw  new ConflictException(stockVO);
-            }else{
-                Stock newStock = transformVOtoEntity(stockVO);
-                stockDAO.save(newStock);
-                return stockVO;
-            }
         }
+        if (isDataConflict(optionalStock.get().getCompanyName(), stockVO.getCompanyName())) {
+            throw new ConflictException(stockVO);
+        }
+
+        Stock stock = transformVOtoEntity(stockVO);
+        try {
+            stockDAO.save(stock);
+        } catch (Exception e) {
+            throw new RuntimeException("update error");
+        }
+        Stock newStock = stockDAO.findById(stock.getStockSymbol()).get();
+        StockVO newStockVO = transformEntityToVO(newStock);
+        return newStockVO;
+
+
     }
 
     @Override
@@ -90,24 +101,29 @@ public class StockServiceImpl implements IStockService {
         Optional<Stock> optionalStock = stockDAO.findById(stockSymbol);
         if (optionalStock.isEmpty()) {
             throw new NoDataException(stockSymbol);
-        } else {
-            Stock stock = optionalStock.get();
-            stockDAO.deleteById(stock.getStockSymbol());
-            StockVO stockVO = transformEntityToVO(stock);
-            return stockVO;
         }
+
+        Stock stock = optionalStock.get();
+        try {
+            stockDAO.deleteById(stock.getStockSymbol());
+        } catch (Exception e) {
+            throw new RuntimeException("delete error");
+        }
+        StockVO stockVO = transformEntityToVO(stock);
+        return stockVO;
+
     }
 
-    private Boolean isDataFormatIncorrect(StockVO stockObj) {
+    public static Boolean isDataFormatIncorrect(StockVO stockObj) {
         String stockSymbol = stockObj.getStockSymbol();
         return (stockSymbol.length() != 4) ? true : false;
     }
 
-    private Boolean isDataConflict(String dataBaseCompanyName, String inputCompanyName) {
+    public static Boolean isDataConflict(String dataBaseCompanyName, String inputCompanyName) {
         return (dataBaseCompanyName.equals(inputCompanyName)) ? false : true;
     }
 
-    private StockVO transformEntityToVO(Stock stock) {
+    public static StockVO transformEntityToVO(Stock stock) {
         StockVO stockVO = new StockVO();
         BeanUtils.copyProperties(stock, stockVO);
         stockVO.setPrice(Float.parseFloat(stock.getPrice()));
@@ -115,7 +131,7 @@ public class StockServiceImpl implements IStockService {
         return stockVO;
     }
 
-    private Stock transformVOtoEntity(StockVO stockVO) {
+    public static Stock transformVOtoEntity(StockVO stockVO) {
         Stock stock = new Stock();
         BeanUtils.copyProperties(stockVO, stock);
         String price = String.valueOf(stockVO.getPrice());
