@@ -1,7 +1,8 @@
 package com.aryido.springboot.web.service;
 
-import com.aryido.springboot.web.dao.IStockDAO;
 import com.aryido.springboot.web.dao.entity.Stock;
+import com.aryido.springboot.web.exception.ConflictException;
+import com.aryido.springboot.web.exception.DataFormatException;
 import com.aryido.springboot.web.exception.NoDataException;
 import com.aryido.springboot.web.service.impl.StockServiceImpl;
 import com.aryido.springboot.web.vo.StockVO;
@@ -25,14 +26,11 @@ import java.util.Objects;
 @SpringBootTest
 public class StockServiceTest {
 
-    private IStockDAO stockDAO;
-
     @Qualifier("StockServiceImpl")
-    private IStockService stockService;
+    private final IStockService stockService;
 
-    public StockServiceTest(@Autowired IStockService stockService, @Autowired IStockDAO stockDAO) {
+    public StockServiceTest(@Autowired IStockService stockService) {
         this.stockService = stockService;
-        this.stockDAO = stockDAO;
     }
 
     @BeforeEach
@@ -57,7 +55,6 @@ public class StockServiceTest {
 
         //executed queryAll()
         Collection<StockVO> stockVOs = stockService.queryAll();
-
         Assertions.assertEquals(5, stockVOs.size());
         stockVOs.forEach(stockVO -> {
                     StockVO expectedStockVO = map.get(stockVO.getStockSymbol());
@@ -75,9 +72,9 @@ public class StockServiceTest {
     void testQueryBy() {
         //expected output
         StockVO expectedStockVO = new StockVO("3711", "日月光", 80.4f, 146);
+
         //executed queryBy() by inputting "3711"
         StockVO stockVO = stockService.queryBy("3711");
-
         Assertions.assertFalse(Objects.isNull(stockVO));
         Assertions.assertAll(
                 () -> Assertions.assertEquals(expectedStockVO.getStockSymbol(), stockVO.getStockSymbol(), "stockSymbol failed."),
@@ -85,6 +82,10 @@ public class StockServiceTest {
                 () -> Assertions.assertEquals(expectedStockVO.getPrice(), stockVO.getPrice(), "Price failed"),
                 () -> Assertions.assertEquals(expectedStockVO.getVolume(), stockVO.getVolume(), "Volume failed")
         );
+
+        //Exception test
+        //executed queryBy() by inputting a bad data. Ex:"9999"
+        Assertions.assertThrows(NoDataException.class, () -> stockService.queryBy("9999"), "No data exception");
     }
 
     @Test
@@ -93,9 +94,9 @@ public class StockServiceTest {
     public void testAddData() {
         //expected output
         StockVO expectedStockVO = new StockVO("2412", "中華電", 109.0F, 5227);
+
         //executed addData() by inputting StockVO
         StockVO stockVO = stockService.addData(new StockVO("2412", "中華電", 109.0F, 5227));
-
         Assertions.assertFalse(Objects.isNull(stockVO));
         Assertions.assertAll(
                 () -> Assertions.assertEquals(expectedStockVO.getStockSymbol(), stockVO.getStockSymbol(), "stockSymbol failed."),
@@ -103,6 +104,23 @@ public class StockServiceTest {
                 () -> Assertions.assertEquals(expectedStockVO.getPrice(), stockVO.getPrice(), "Price failed"),
                 () -> Assertions.assertEquals(expectedStockVO.getVolume(), stockVO.getVolume(), "Volume failed")
         );
+
+
+        //Exception test
+        //executed addData() by inputting a bad StockVO
+        Assertions.assertThrows(
+                DataFormatException.class,
+                () -> stockService.updateData(new StockVO("2412111111111111", "中華電", 109.0F, 5227)),
+                "Data format Exception, stocksymbol is too long");
+        Assertions.assertThrows(
+                DataFormatException.class,
+                () -> stockService.updateData(new StockVO("0", "中華電", 109.0F, 5227)),
+                "Data format Exception, stocksymbol is too short");
+        Assertions.assertThrows(NoDataException.class, () -> stockService.updateData(new StockVO("1234", "1234", 109.0F, 5227)), "No data exception");
+        Assertions.assertThrows(
+                ConflictException.class,
+                () -> stockService.updateData(new StockVO("3711", "abc", 44.4f, 200)),
+                "inputting data has existed");
     }
 
     @Test
@@ -113,7 +131,6 @@ public class StockServiceTest {
         StockVO expectedStockVO = new StockVO("3711", "日月光", 99.9f, 999);
         //executed updateData() by inputting StockVO
         StockVO stockVO = stockService.updateData(new StockVO("3711", "日月光", 99.9f, 999));
-
         Assertions.assertFalse(Objects.isNull(stockVO));
         Assertions.assertAll(
                 () -> Assertions.assertEquals(expectedStockVO.getStockSymbol(), stockVO.getStockSymbol(), "stockSymbol failed."),
@@ -121,6 +138,22 @@ public class StockServiceTest {
                 () -> Assertions.assertEquals(expectedStockVO.getPrice(), stockVO.getPrice(), "Price failed"),
                 () -> Assertions.assertEquals(expectedStockVO.getVolume(), stockVO.getVolume(), "Volume failed")
         );
+
+        //Exception test
+        //executed updateData() by inputting a bad StockVO
+        Assertions.assertThrows(
+                DataFormatException.class,
+                () -> stockService.addData(new StockVO("37111111111111111111111111111", "日月光", 99.9f, 999)),
+                "Data format Exception, stock's symbol is too long");
+        Assertions.assertThrows(
+                DataFormatException.class,
+                () -> stockService.addData(new StockVO("", "日月光", 99.9f, 999)),
+                "Data format Exception, stock's symbol is too short");
+        Assertions.assertThrows(
+                ConflictException.class,
+                () -> stockService.addData(new StockVO("3711", "abc", 44.4f, 200)),
+                "conflict Exception, inputting stockVO' companyName has existed, but stockSymbol is different");
+
     }
 
     @Test
@@ -139,9 +172,9 @@ public class StockServiceTest {
                 () -> Assertions.assertEquals(expectedHasBeenDeletedstockVO.getVolume(), deletedStockVO.getVolume(), "Volume failed")
         );
 
-        Assertions.assertThrows(NoDataException.class, () -> {
-            stockService.queryBy("3711");
-        }, "Need to throws NoDataException");
+        //Exception test
+        //executed updateData() by inputting a bad StockVO
+        Assertions.assertThrows(NoDataException.class, () -> stockService.queryBy("3711"), "Need to throws NoDataException");
     }
 
     @Test

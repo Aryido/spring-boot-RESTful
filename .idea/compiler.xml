@@ -10,7 +10,7 @@
         <module name="springboot_web" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
+    <bytecodeTargetLevel target="11">
       <module name="springboot_web" target="11" />
     </bytecodeTargetLevel>
   </component>

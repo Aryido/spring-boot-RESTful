@@ -49,6 +49,7 @@ public class StockServiceImpl implements IStockService {
         return stockVO;
     }
 
+
     @Override
     public StockVO addData(StockVO stockVO) {
         if (isDataFormatIncorrect(stockVO)) {
