@@ -1,5 +1,7 @@
-FROM openjdk:8-jdk-alpine
-COPY ./target/*.jar /workspace/mydocker/demo.jar
-EXPOSE 8080
+FROM adoptopenjdk/openjdk11:latest
+COPY *.jar /workspace/mydocker/demo.jar
 WORKDIR  /workspace/mydocker
+
+EXPOSE 8080
+
 ENTRYPOINT ["java","-jar","demo.jar"]

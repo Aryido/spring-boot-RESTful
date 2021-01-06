@@ -15,4 +15,6 @@ public class StockVO {
 	private String companyName;
 	private float price;
 	private int volume;
+
+
 }

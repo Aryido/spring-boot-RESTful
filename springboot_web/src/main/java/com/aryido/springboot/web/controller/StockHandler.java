@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collection;
 
 @RestController
-@RequestMapping("/stock")
+@RequestMapping(value = "/stock", produces = {"application/json; charset=UTF-8"})
 public class StockHandler {
 
     @Qualifier("StockServiceImpl")
@@ -18,6 +18,11 @@ public class StockHandler {
     @Autowired
     public StockHandler(IStockService stockService) {
         this.stockService = stockService;
+    }
+
+    @GetMapping("/test/{inputString}")
+    public String testPath(@PathVariable("inputString") String inputString) {
+        return inputString;
     }
 
 
