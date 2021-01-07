@@ -19,6 +19,11 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.HashMap;
 
+/**
+ * Unit test of StockHandler by mockMvc and mockBean
+ *
+ * @author YunYnag Lee
+ */
 @AutoConfigureMockMvc
 @WebMvcTest(StockHandler.class)
 public class StockHandlerTest {
@@ -52,9 +57,6 @@ public class StockHandlerTest {
         map.put("3045", new StockVO("3045", "台灣大", 99.4f, 56));
         map.put("0050", new StockVO("0050", "台灣50", 118.55f, 50));
         String expectedJsonResponse = objectMapper.writeValueAsString(map.values());
-
-        //input
-        //this function do not need any input
 
         //Mockito
         Mockito.when(stockService.queryAll()).thenReturn(map.values());
@@ -123,7 +125,7 @@ public class StockHandlerTest {
     }
 
     @Test
-    void deleteByStockSymbol() throws Exception{
+    void deleteByStockSymbol() throws Exception {
         //expected output
         String expectedJsonResponse = objectMapper.writeValueAsString(new StockVO("2412", "中華電", 109.0F, 99999));
 
@@ -137,9 +139,6 @@ public class StockHandlerTest {
         //Assertion
         resultActions.andExpect(MockMvcResultMatchers.status().isOk());
         resultActions.andExpect(MockMvcResultMatchers.content().string(expectedJsonResponse));
-
-
     }
-
 
 }

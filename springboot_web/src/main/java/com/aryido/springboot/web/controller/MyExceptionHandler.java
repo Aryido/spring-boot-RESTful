@@ -14,55 +14,82 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * MyExceptionHandler is used to catch all "Exception" from spring-boot controller.
+ * With the annotation "ControllerAdvice", we can handle exception.
+ *
+ * @author YunYang LEE
+ */
 @ControllerAdvice
 public class MyExceptionHandler {
 
+    /**
+     * It can handle NoDataException and returning message which be defined by ourself.
+     *
+     * @param noDataExceptionObj be defined exception object
+     * @return errorMessageMap
+     */
     @ExceptionHandler({NoDataException.class})
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public Map<String, Object> handleException_NoDataException(Exception e, NoDataException inputObj) {
-        Map<String, Object> map = new HashMap<>();
-        String timeStr = nowTimeFormatFunction();
-        map.put("Time", timeStr);
-        map.put("status", HttpStatus.BAD_REQUEST);
-        map.put("message", e.getMessage());
-        map.put("search stockSymbol", inputObj.getStockSymbol());
-        return map;
+    public Map<String, Object> handleException_NoDataException(NoDataException noDataExceptionObj) {
+        return new HashMap<>() {
+            {
+                put("Time", nowTimeFormatFunction());
+                put("status", HttpStatus.BAD_REQUEST);
+                put("message", noDataExceptionObj.getMessage());
+                put("search stockSymbol", noDataExceptionObj.getStockSymbol());
+            }
+        };
     }
 
+    /**
+     * It can handle DataFormatException and returning message which be defined by ourself.
+     *
+     * @param dataFormatExceptionObj be defined exception object
+     * @return errorMessageMap
+     */
     @ExceptionHandler(DataFormatException.class)
     @ResponseStatus(value = HttpStatus.METHOD_NOT_ALLOWED)
     @ResponseBody
-    public Map<String, Object> handleException_DataFormatException(Exception e, DataFormatException inputObj) {
-        Map<String, Object> map = new HashMap<>();
-        String timeStr = nowTimeFormatFunction();
-        map.put("Time", timeStr);
-        map.put("status", HttpStatus.METHOD_NOT_ALLOWED);
-        map.put("message", e.getMessage());
-        map.put("Failed data", inputObj.getObj());
-        return map;
+    public Map<String, Object> handleException_DataFormatException(DataFormatException dataFormatExceptionObj) {
+        return new HashMap<>() {
+            {
+                put("Time", nowTimeFormatFunction());
+                put("status", HttpStatus.METHOD_NOT_ALLOWED);
+                put("message", dataFormatExceptionObj.getMessage());
+                put("Failed data", dataFormatExceptionObj.getObj());
+            }
+        };
     }
 
-
+    /**
+     * It can handle ConflictException and returning message which be defined by ourself.
+     *
+     * @param conflictExceptionObj be defined exception object
+     * @return errorMessageMap
+     */
     @ExceptionHandler(ConflictException.class)
     @ResponseStatus(value = HttpStatus.CONFLICT)
     @ResponseBody
-    public Map<String, Object> handleException_ConflictException(Exception e, ConflictException inputObj) {
-        Map<String, Object> map = new HashMap<>();
-        String timeStr = nowTimeFormatFunction();
-        map.put("Time", timeStr);
-        map.put("status", HttpStatus.CONFLICT);
-        map.put("message", e.getMessage());
-        map.put("Failed data", inputObj.getObj());
-        return map;
+    public Map<String, Object> handleException_ConflictException(ConflictException conflictExceptionObj) {
+        return new HashMap<>() {
+            {
+                put("Time", nowTimeFormatFunction());
+                put("status", HttpStatus.CONFLICT);
+                put("message", conflictExceptionObj.getMessage());
+                put("Failed data", conflictExceptionObj.getObj());
+            }
+        };
     }
 
-
+    /**
+     * To format now time
+     *
+     * @return SimpleDateFormat
+     */
     private String nowTimeFormatFunction() {
-        SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
-        Date nowTime = new Date();
-        String timeStr = sdFormat.format(nowTime);
-        return timeStr;
+        return new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS").format(new Date());
     }
 
 }

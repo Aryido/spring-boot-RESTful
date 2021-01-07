@@ -17,6 +17,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Optional;
 
+/**
+ * To solve main business logic.
+ *
+ * @author YunYang Lee
+ */
 @Service("StockServiceImpl")
 public class StockServiceImpl implements IStockService {
 
@@ -27,50 +32,71 @@ public class StockServiceImpl implements IStockService {
         this.stockDAO = stockDAO;
     }
 
+    /**
+     * To find all data in database.
+     *
+     * @return Collection
+     */
     @Override
     public Collection<StockVO> queryAll() {
-        Iterable<Stock> stocks = stockDAO.findAll();
-        HashMap<String, StockVO> map = new HashMap<>();
-        for (Stock stock : stocks) {
-            StockVO stockVO = transformEntityToVO(stock);
-            map.put(stock.getStockSymbol(), stockVO);
-        }
+        HashMap<String, StockVO> map = new HashMap<>() {
+            {
+                for (Stock stock : stockDAO.findAll()) {
+                    StockVO stockVO = transformEntityToVO(stock);
+                    put(stock.getStockSymbol(), stockVO);
+                }
+            }
+        };
         return map.values();
     }
 
+    /**
+     * To find a data in database by primary key(stock's symbol).
+     *
+     * @param stockSymbol stock's id.
+     * @return StockVO
+     */
     @Override
     public StockVO queryBy(String stockSymbol) {
         Optional<Stock> optionalStock = stockDAO.findById(stockSymbol);
         if (optionalStock.isEmpty()) {
             throw new NoDataException(stockSymbol);
+        } else {
+            return transformEntityToVO(optionalStock.get());
         }
-        Stock stock = optionalStock.get();
-        StockVO stockVO = transformEntityToVO(stock);
-        return stockVO;
     }
 
-
+    /**
+     * To create a data in database, and we need to check data's format and existing of the data.
+     *
+     * @param stockVO data to be added
+     * @return StockVO
+     */
     @Override
     public StockVO addData(StockVO stockVO) {
         if (isDataFormatIncorrect(stockVO)) {
             throw new DataFormatException(stockVO);
         }
+
         if (stockDAO.findById(stockVO.getStockSymbol()).isPresent()) {
             throw new ConflictException(stockVO);
         }
 
-        Stock stock = transformVOtoEntity(stockVO);
         try {
+            Stock stock = transformVOtoEntity(stockVO);
             stockDAO.save(stock);
         } catch (Exception e) {
             throw new RuntimeException("add error");
         }
-        Stock newStock = stockDAO.findById(stock.getStockSymbol()).get();
-        StockVO newStockVO = transformEntityToVO(newStock);
-        return newStockVO;
-
+        return stockVO;
     }
 
+    /**
+     * To update a data in database, and we need to check data's format and existing of the data .
+     *
+     * @param stockVO data to be updated
+     * @return StockVO
+     */
     @Override
     public StockVO updateData(StockVO stockVO) {
         if (isDataFormatIncorrect(stockVO)) {
@@ -80,50 +106,65 @@ public class StockServiceImpl implements IStockService {
         if (optionalStock.isEmpty()) {
             throw new NoDataException(stockVO.getStockSymbol());
         }
-        if (isDataConflict(optionalStock.get().getCompanyName(), stockVO.getCompanyName())) {
+        if (isDataConflict(optionalStock.get(), stockVO)) {
             throw new ConflictException(stockVO);
         }
 
-        Stock stock = transformVOtoEntity(stockVO);
         try {
+            Stock stock = transformVOtoEntity(stockVO);
             stockDAO.save(stock);
         } catch (Exception e) {
             throw new RuntimeException("update error");
         }
-        Stock newStock = stockDAO.findById(stock.getStockSymbol()).get();
-        StockVO newStockVO = transformEntityToVO(newStock);
-        return newStockVO;
-
-
+        return stockVO;
     }
 
+    /**
+     * To delete a data in database by primary key(stock's symbol).
+     *
+     * @param stockSymbol to be deleted data's id
+     * @return StockVO
+     */
     @Override
     public StockVO deleteDataBy(String stockSymbol) {
         Optional<Stock> optionalStock = stockDAO.findById(stockSymbol);
         if (optionalStock.isEmpty()) {
             throw new NoDataException(stockSymbol);
+        } else {
+            Stock stock = optionalStock.get();
+            try {
+                stockDAO.deleteById(stock.getStockSymbol());
+            } catch (Exception e) {
+                throw new RuntimeException("delete error");
+            }
+            return transformEntityToVO(stock);
         }
-
-        Stock stock = optionalStock.get();
-        try {
-            stockDAO.deleteById(stock.getStockSymbol());
-        } catch (Exception e) {
-            throw new RuntimeException("delete error");
-        }
-        StockVO stockVO = transformEntityToVO(stock);
-        return stockVO;
-
     }
 
+    /**
+     * To check Data's format
+     *
+     * @return Boolean
+     */
     public static Boolean isDataFormatIncorrect(StockVO stockObj) {
         String stockSymbol = stockObj.getStockSymbol();
-        return (stockSymbol.length() != 4) ? true : false;
+        return (stockSymbol.length() != 4);
     }
 
-    public static Boolean isDataConflict(String dataBaseCompanyName, String inputCompanyName) {
-        return (dataBaseCompanyName.equals(inputCompanyName)) ? false : true;
+    /**
+     * To check whether Data is Conflict or not
+     *
+     * @return Boolean
+     */
+    public static Boolean isDataConflict(Stock stock, StockVO stockVO) {
+        return !stock.getCompanyName().equals(stockVO.getCompanyName());
     }
 
+    /**
+     * To transform Entity to VO
+     *
+     * @return StockVO
+     */
     public static StockVO transformEntityToVO(Stock stock) {
         StockVO stockVO = new StockVO();
         BeanUtils.copyProperties(stock, stockVO);
@@ -132,6 +173,11 @@ public class StockServiceImpl implements IStockService {
         return stockVO;
     }
 
+    /**
+     * To transform VO to Entity
+     *
+     * @return Entity
+     */
     public static Stock transformVOtoEntity(StockVO stockVO) {
         Stock stock = new Stock();
         BeanUtils.copyProperties(stockVO, stock);

@@ -19,6 +19,11 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+/**
+ * Unit test of StockExceptionHandler.
+ *
+ * @author YunYnag Lee
+ */
 @AutoConfigureMockMvc
 @WebMvcTest(StockHandler.class)
 public class MyExceptionHandlerTest {
@@ -41,7 +46,6 @@ public class MyExceptionHandlerTest {
     void afterEachMethod() {
         System.out.println("Ending test...");
     }
-
 
     @Test
     void testNoDataException() throws Exception {

@@ -22,7 +22,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Objects;
 
-
+/**
+ * Integration test of StockServiceImpl.
+ *
+ * @author YunYnag Lee
+ */
 @SpringBootTest
 public class StockServiceTest {
 
@@ -105,7 +109,6 @@ public class StockServiceTest {
                 () -> Assertions.assertEquals(expectedStockVO.getVolume(), stockVO.getVolume(), "Volume failed")
         );
 
-
         //Exception test
         //executed addData() by inputting a bad StockVO
         Assertions.assertThrows(
@@ -129,6 +132,7 @@ public class StockServiceTest {
     public void testUpdateData() {
         //expected output
         StockVO expectedStockVO = new StockVO("3711", "日月光", 99.9f, 999);
+
         //executed updateData() by inputting StockVO
         StockVO stockVO = stockService.updateData(new StockVO("3711", "日月光", 99.9f, 999));
         Assertions.assertFalse(Objects.isNull(stockVO));
@@ -160,21 +164,20 @@ public class StockServiceTest {
     @Transactional
     @Rollback
     public void testDeleteDataBy() {
-        StockVO expectedHasBeenDeletedstockVO = stockService.queryBy("3711");
-        Assertions.assertFalse(Objects.isNull(expectedHasBeenDeletedstockVO));
+        //expected output
+        StockVO expectedStockVO = new StockVO("3711", "日月光", 80.4f, 146);
 
         //executed deleteDataBy() by inputting "3711"
         StockVO deletedStockVO = stockService.deleteDataBy("3711");
+        Assertions.assertFalse(Objects.isNull(expectedStockVO));
         Assertions.assertAll(
-                () -> Assertions.assertEquals(expectedHasBeenDeletedstockVO.getStockSymbol(), deletedStockVO.getStockSymbol(), "stockSymbol failed."),
-                () -> Assertions.assertEquals(expectedHasBeenDeletedstockVO.getCompanyName(), deletedStockVO.getCompanyName(), "CompanyName failed."),
-                () -> Assertions.assertEquals(expectedHasBeenDeletedstockVO.getPrice(), deletedStockVO.getPrice(), "Price failed"),
-                () -> Assertions.assertEquals(expectedHasBeenDeletedstockVO.getVolume(), deletedStockVO.getVolume(), "Volume failed")
+                () -> Assertions.assertEquals(expectedStockVO.getStockSymbol(), deletedStockVO.getStockSymbol(), "stockSymbol failed."),
+                () -> Assertions.assertEquals(expectedStockVO.getCompanyName(), deletedStockVO.getCompanyName(), "CompanyName failed."),
+                () -> Assertions.assertEquals(expectedStockVO.getPrice(), deletedStockVO.getPrice(), "Price failed"),
+                () -> Assertions.assertEquals(expectedStockVO.getVolume(), deletedStockVO.getVolume(), "Volume failed")
         );
 
-        //Exception test
-        //executed updateData() by inputting a bad StockVO
-        Assertions.assertThrows(NoDataException.class, () -> stockService.queryBy("3711"), "Need to throws NoDataException");
+        Assertions.assertThrows(NoDataException.class, () -> stockService.queryBy("3711"), "Need to throws NoDataException because data has been deleted.");
     }
 
     @Test
@@ -203,7 +206,7 @@ public class StockServiceTest {
         StockVO expectedStockVO = new StockVO("3711", "日月光", 80.4F, 146);
 
         //executed testTransformVOtoEntity() by inputting Stock
-        StockVO stockVO = StockServiceImpl.transformEntityToVO(new Stock("3711", "日月光", "80.4", "146", "2020/12/25 15:32:06"));
+        StockVO stockVO = StockServiceImpl.transformEntityToVO(new Stock("3711", "日月光", "80.4", "146", "2020-12-25 15:32:06"));
 
         //start assertions
         Assertions.assertAll(
@@ -229,9 +232,9 @@ public class StockServiceTest {
 
     @Test
     void testIsDataConflict() {
-        Assertions.assertEquals(true, StockServiceImpl.isDataConflict("Apple", "Guava"));
-        Assertions.assertEquals(false, StockServiceImpl.isDataConflict("Apple", "Apple"));
+        Stock stock = Stock.builder().stockSymbol("3711").companyName("日月光").price("80.4").volume("146").createTime("2020-11-11 11:11:11").build();
+        Assertions.assertEquals(false, StockServiceImpl.isDataConflict(stock, StockVO.builder().stockSymbol("3711").companyName("日月光").price(80.4F).volume(146).build()));
+        Assertions.assertEquals(true, StockServiceImpl.isDataConflict(stock, StockVO.builder().stockSymbol("3711").companyName("日月光1").price(80.4F).volume(146).build()));
     }
-
 
 }
