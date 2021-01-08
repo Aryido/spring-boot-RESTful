@@ -12,10 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 @Service("StockServiceImpl")
 public class StockServiceImpl implements IStockService {
@@ -28,47 +28,35 @@ public class StockServiceImpl implements IStockService {
     }
 
     @Override
-    public Collection<StockVO> queryAll() {
+    public Iterable<StockVO> queryAll() {
         Iterable<Stock> stocks = stockDAO.findAll();
-        HashMap<String, StockVO> map = new HashMap<>();
-        for (Stock stock : stocks) {
-            StockVO stockVO = transformEntityToVO(stock);
-            map.put(stock.getStockSymbol(), stockVO);
-        }
-        return map.values();
+        Stream<Stock> stream = StreamSupport.stream(stocks.spliterator(), false);
+        return stream
+                .map(StockServiceImpl::transformEntityToVO)
+                .collect(Collectors.toList());
     }
 
     @Override
     public StockVO queryBy(String stockSymbol) {
         Optional<Stock> optionalStock = stockDAO.findById(stockSymbol);
-        if (optionalStock.isEmpty()) {
-            throw new NoDataException(stockSymbol);
-        }
-        Stock stock = optionalStock.get();
-        StockVO stockVO = transformEntityToVO(stock);
-        return stockVO;
+        return optionalStock
+                .map(StockServiceImpl::transformEntityToVO)
+                .orElseThrow(() -> new NoDataException(stockSymbol));
     }
-
 
     @Override
     public StockVO addData(StockVO stockVO) {
         if (isDataFormatIncorrect(stockVO)) {
             throw new DataFormatException(stockVO);
         }
-        if (stockDAO.findById(stockVO.getStockSymbol()).isPresent()) {
-            throw new ConflictException(stockVO);
-        }
+        stockDAO
+                .findById(stockVO.getStockSymbol())
+                .ifPresent(stock -> {
+                    throw new ConflictException(stockVO);
+                });
 
-        Stock stock = transformVOtoEntity(stockVO);
-        try {
-            stockDAO.save(stock);
-        } catch (Exception e) {
-            throw new RuntimeException("add error");
-        }
-        Stock newStock = stockDAO.findById(stock.getStockSymbol()).get();
-        StockVO newStockVO = transformEntityToVO(newStock);
-        return newStockVO;
-
+        stockDAO.save(transformVOtoEntity(stockVO));
+        return stockVO;
     }
 
     @Override
@@ -76,52 +64,43 @@ public class StockServiceImpl implements IStockService {
         if (isDataFormatIncorrect(stockVO)) {
             throw new DataFormatException(stockVO);
         }
+
         Optional<Stock> optionalStock = stockDAO.findById(stockVO.getStockSymbol());
-        if (optionalStock.isEmpty()) {
-            throw new NoDataException(stockVO.getStockSymbol());
-        }
-        if (isDataConflict(optionalStock.get().getCompanyName(), stockVO.getCompanyName())) {
-            throw new ConflictException(stockVO);
-        }
-
-        Stock stock = transformVOtoEntity(stockVO);
-        try {
-            stockDAO.save(stock);
-        } catch (Exception e) {
-            throw new RuntimeException("update error");
-        }
-        Stock newStock = stockDAO.findById(stock.getStockSymbol()).get();
-        StockVO newStockVO = transformEntityToVO(newStock);
-        return newStockVO;
-
-
+        optionalStock
+                .ifPresentOrElse(
+                        stock -> {
+                            if (isDataConflict(stock.getCompanyName(), stockVO.getCompanyName())) {
+                                throw new ConflictException(stockVO);
+                            }
+                        },
+                        () -> {
+                            throw new NoDataException(stockVO.getStockSymbol());
+                        });
+        stockDAO.save(transformVOtoEntity(stockVO));
+        return stockVO;
     }
 
     @Override
     public StockVO deleteDataBy(String stockSymbol) {
         Optional<Stock> optionalStock = stockDAO.findById(stockSymbol);
-        if (optionalStock.isEmpty()) {
-            throw new NoDataException(stockSymbol);
-        }
-
-        Stock stock = optionalStock.get();
-        try {
-            stockDAO.deleteById(stock.getStockSymbol());
-        } catch (Exception e) {
-            throw new RuntimeException("delete error");
-        }
-        StockVO stockVO = transformEntityToVO(stock);
-        return stockVO;
-
+        return optionalStock
+                .map(stock -> {
+                    stockDAO.deleteById(stock.getStockSymbol());
+                    return stock;
+                })
+                .map(StockServiceImpl::transformEntityToVO)
+                .orElseThrow(() -> {
+                    throw new NoDataException(stockSymbol);
+                });
     }
 
-    public static Boolean isDataFormatIncorrect(StockVO stockObj) {
+    public static boolean isDataFormatIncorrect(StockVO stockObj) {
         String stockSymbol = stockObj.getStockSymbol();
-        return (stockSymbol.length() != 4) ? true : false;
+        return (stockSymbol.length() != 4);
     }
 
     public static Boolean isDataConflict(String dataBaseCompanyName, String inputCompanyName) {
-        return (dataBaseCompanyName.equals(inputCompanyName)) ? false : true;
+        return (!dataBaseCompanyName.equals(inputCompanyName));
     }
 
     public static StockVO transformEntityToVO(Stock stock) {

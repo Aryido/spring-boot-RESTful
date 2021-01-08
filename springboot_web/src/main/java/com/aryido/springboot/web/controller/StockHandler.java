@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
-
 @RestController
 @RequestMapping(value = "/stock", produces = {"application/json; charset=UTF-8"})
 public class StockHandler {
@@ -20,14 +18,8 @@ public class StockHandler {
         this.stockService = stockService;
     }
 
-    @GetMapping("/test/{inputString}")
-    public String testPath(@PathVariable("inputString") String inputString) {
-        return inputString;
-    }
-
-
     @GetMapping("/")
-    public Collection<StockVO> findAll() {
+    public Iterable<StockVO> findAll() {
         return stockService.queryAll();
     }
 
