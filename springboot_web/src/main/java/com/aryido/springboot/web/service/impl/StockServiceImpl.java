@@ -9,6 +9,7 @@ import com.aryido.springboot.web.service.IStockService;
 import com.aryido.springboot.web.vo.StockVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
@@ -37,7 +38,9 @@ public class StockServiceImpl implements IStockService {
     }
 
     @Override
+    @Cacheable(value = "queryByStockSymbol")
     public StockVO queryBy(String stockSymbol) {
+        System.out.println("from H2");
         Optional<Stock> optionalStock = stockDAO.findById(stockSymbol);
         return optionalStock
                 .map(StockServiceImpl::transformEntityToVO)

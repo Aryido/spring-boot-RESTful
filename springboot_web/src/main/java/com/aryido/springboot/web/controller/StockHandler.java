@@ -4,9 +4,11 @@ import com.aryido.springboot.web.service.IStockService;
 import com.aryido.springboot.web.vo.StockVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@EnableCaching
 @RequestMapping(value = "/stock", produces = {"application/json; charset=UTF-8"})
 public class StockHandler {
 
