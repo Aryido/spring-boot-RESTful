@@ -39,25 +39,14 @@ public class StockServiceImpl implements IStockService {
      * @return Collection
      */
     @Override
-<<<<<<< HEAD
-    public Collection<StockVO> queryAll() {
-        HashMap<String, StockVO> map = new HashMap<>() {
-            {
-                for (Stock stock : stockDAO.findAll()) {
-                    StockVO stockVO = transformEntityToVO(stock);
-                    put(stock.getStockSymbol(), stockVO);
-                }
-            }
-        };
-        return map.values();
-=======
+    @Cacheable(value = "queryAll")
     public Iterable<StockVO> queryAll() {
+        System.out.println("from H2");
         Iterable<Stock> stocks = stockDAO.findAll();
         Stream<Stock> stream = StreamSupport.stream(stocks.spliterator(), false);
         return stream
                 .map(StockServiceImpl::transformEntityToVO)
                 .collect(Collectors.toList());
->>>>>>> branchExercise
     }
 
     /**
@@ -71,45 +60,17 @@ public class StockServiceImpl implements IStockService {
     public StockVO queryBy(String stockSymbol) {
         System.out.println("from H2");
         Optional<Stock> optionalStock = stockDAO.findById(stockSymbol);
-<<<<<<< HEAD
-        if (optionalStock.isEmpty()) {
-            throw new NoDataException(stockSymbol);
-        } else {
-            return transformEntityToVO(optionalStock.get());
-        }
-    }
-
-    /**
-     * To create a data in database, and we need to check data's format and existing of the data.
-     *
-     * @param stockVO data to be added
-     * @return StockVO
-     */
-=======
         return optionalStock
                 .map(StockServiceImpl::transformEntityToVO)
                 .orElseThrow(() -> new NoDataException(stockSymbol));
     }
 
->>>>>>> branchExercise
+
     @Override
     public StockVO addData(StockVO stockVO) {
         if (isDataFormatIncorrect(stockVO)) {
             throw new DataFormatException(stockVO);
         }
-<<<<<<< HEAD
-
-        if (stockDAO.findById(stockVO.getStockSymbol()).isPresent()) {
-            throw new ConflictException(stockVO);
-        }
-
-        try {
-            Stock stock = transformVOtoEntity(stockVO);
-            stockDAO.save(stock);
-        } catch (Exception e) {
-            throw new RuntimeException("add error");
-        }
-=======
         stockDAO
                 .findById(stockVO.getStockSymbol())
                 .ifPresent(stock -> {
@@ -117,7 +78,6 @@ public class StockServiceImpl implements IStockService {
                 });
 
         stockDAO.save(transformVOtoEntity(stockVO));
->>>>>>> branchExercise
         return stockVO;
     }
 
@@ -132,28 +92,11 @@ public class StockServiceImpl implements IStockService {
         if (isDataFormatIncorrect(stockVO)) {
             throw new DataFormatException(stockVO);
         }
-<<<<<<< HEAD
-        Optional<Stock> optionalStock = stockDAO.findById(stockVO.getStockSymbol());
-        if (optionalStock.isEmpty()) {
-            throw new NoDataException(stockVO.getStockSymbol());
-        }
-        if (isDataConflict(optionalStock.get(), stockVO)) {
-            throw new ConflictException(stockVO);
-        }
-
-        try {
-            Stock stock = transformVOtoEntity(stockVO);
-            stockDAO.save(stock);
-        } catch (Exception e) {
-            throw new RuntimeException("update error");
-        }
-=======
-
         Optional<Stock> optionalStock = stockDAO.findById(stockVO.getStockSymbol());
         optionalStock
                 .ifPresentOrElse(
                         stock -> {
-                            if (isDataConflict(stock.getCompanyName(), stockVO.getCompanyName())) {
+                            if (isDataConflict(stock, stockVO)) {
                                 throw new ConflictException(stockVO);
                             }
                         },
@@ -161,7 +104,6 @@ public class StockServiceImpl implements IStockService {
                             throw new NoDataException(stockVO.getStockSymbol());
                         });
         stockDAO.save(transformVOtoEntity(stockVO));
->>>>>>> branchExercise
         return stockVO;
     }
 
@@ -174,27 +116,6 @@ public class StockServiceImpl implements IStockService {
     @Override
     public StockVO deleteDataBy(String stockSymbol) {
         Optional<Stock> optionalStock = stockDAO.findById(stockSymbol);
-<<<<<<< HEAD
-        if (optionalStock.isEmpty()) {
-            throw new NoDataException(stockSymbol);
-        } else {
-            Stock stock = optionalStock.get();
-            try {
-                stockDAO.deleteById(stock.getStockSymbol());
-            } catch (Exception e) {
-                throw new RuntimeException("delete error");
-            }
-            return transformEntityToVO(stock);
-        }
-    }
-
-    /**
-     * To check Data's format
-     *
-     * @return Boolean
-     */
-    public static Boolean isDataFormatIncorrect(StockVO stockObj) {
-=======
         return optionalStock
                 .map(stock -> {
                     stockDAO.deleteById(stock.getStockSymbol());
@@ -207,12 +128,11 @@ public class StockServiceImpl implements IStockService {
     }
 
     public static boolean isDataFormatIncorrect(StockVO stockObj) {
->>>>>>> branchExercise
         String stockSymbol = stockObj.getStockSymbol();
         return (stockSymbol.length() != 4);
     }
 
-<<<<<<< HEAD
+
     /**
      * To check whether Data is Conflict or not
      *
@@ -220,10 +140,6 @@ public class StockServiceImpl implements IStockService {
      */
     public static Boolean isDataConflict(Stock stock, StockVO stockVO) {
         return !stock.getCompanyName().equals(stockVO.getCompanyName());
-=======
-    public static Boolean isDataConflict(String dataBaseCompanyName, String inputCompanyName) {
-        return (!dataBaseCompanyName.equals(inputCompanyName));
->>>>>>> branchExercise
     }
 
     /**

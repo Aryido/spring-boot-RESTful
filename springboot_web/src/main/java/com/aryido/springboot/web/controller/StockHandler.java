@@ -4,27 +4,13 @@ import com.aryido.springboot.web.service.IStockService;
 import com.aryido.springboot.web.vo.StockVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-<<<<<<< HEAD
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
-
-/**
- * RESTful API
- *
- * @author YunYang Lee
- */
-@RestController
-@RequestMapping(value = "/stock", produces = {MediaType.APPLICATION_JSON_VALUE})
-=======
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @EnableCaching
 @RequestMapping(value = "/stock", produces = {"application/json; charset=UTF-8"})
->>>>>>> branchExercise
 public class StockHandler {
 
     @Qualifier("StockServiceImpl")
@@ -35,14 +21,12 @@ public class StockHandler {
         this.stockService = stockService;
     }
 
-<<<<<<< HEAD
+
     /**
      * To find all data in database.
      *
      * @return Collection
      */
-=======
->>>>>>> branchExercise
     @GetMapping("/")
     public Iterable<StockVO> findAll() {
         return stockService.queryAll();
