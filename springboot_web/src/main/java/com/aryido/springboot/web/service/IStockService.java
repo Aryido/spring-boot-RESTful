@@ -3,8 +3,6 @@ package com.aryido.springboot.web.service;
 
 import com.aryido.springboot.web.vo.StockVO;
 
-import java.util.Collection;
-
 /**
  * The service use CRUD to operate data from database.
  *
@@ -17,7 +15,7 @@ public interface IStockService {
      *
      * @return collection of stock
      */
-    Collection<StockVO> queryAll();
+    Iterable<StockVO> queryAll();
 
     /**
      * Get stock by stock's Symbol from database.

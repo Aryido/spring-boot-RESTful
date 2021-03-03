@@ -17,7 +17,6 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Objects;
@@ -58,8 +57,8 @@ public class StockServiceTest {
         map.put("0050", new StockVO("0050", "台灣50", 118.55f, 50));
 
         //executed queryAll()
-        Collection<StockVO> stockVOs = stockService.queryAll();
-        Assertions.assertEquals(5, stockVOs.size());
+        Iterable<StockVO> stockVOs = stockService.queryAll();
+        Assertions.assertEquals(5, stockVOs.spliterator().getExactSizeIfKnown());
         stockVOs.forEach(stockVO -> {
                     StockVO expectedStockVO = map.get(stockVO.getStockSymbol());
                     Assertions.assertAll(
