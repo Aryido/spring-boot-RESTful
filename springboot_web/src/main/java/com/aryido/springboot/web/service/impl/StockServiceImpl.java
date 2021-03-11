@@ -9,11 +9,14 @@ import com.aryido.springboot.web.service.IStockService;
 import com.aryido.springboot.web.vo.StockVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -28,6 +31,7 @@ public class StockServiceImpl implements IStockService {
 
     private final IStockDAO stockDAO;
 
+
     @Autowired
     public StockServiceImpl(IStockDAO stockDAO) {
         this.stockDAO = stockDAO;
@@ -39,7 +43,7 @@ public class StockServiceImpl implements IStockService {
      * @return Collection
      */
     @Override
-    @Cacheable(value = "queryAll")
+    @Cacheable(value = "queryAll")  //cacheManager = "RedisCacheManager"  cacheAutoConfiguration
     public Iterable<StockVO> queryAll() {
         System.out.println("from H2");
         Iterable<Stock> stocks = stockDAO.findAll();
@@ -56,7 +60,7 @@ public class StockServiceImpl implements IStockService {
      * @return StockVO
      */
     @Override
-    @Cacheable(value = "queryByStockSymbol")
+    @Cacheable(value = "queryBy")
     public StockVO queryBy(String stockSymbol) {
         System.out.println("from H2");
         Optional<Stock> optionalStock = stockDAO.findById(stockSymbol);
@@ -67,7 +71,9 @@ public class StockServiceImpl implements IStockService {
 
 
     @Override
+    @CacheEvict(value = "queryAll", allEntries = true)
     public StockVO addData(StockVO stockVO) {
+        System.out.println("from H2");
         if (isDataFormatIncorrect(stockVO)) {
             throw new DataFormatException(stockVO);
         }
@@ -88,7 +94,9 @@ public class StockServiceImpl implements IStockService {
      * @return StockVO
      */
     @Override
+    @CachePut(value = "queryBy", key = "#stockVO.stockSymbol")
     public StockVO updateData(StockVO stockVO) {
+        System.out.println("from H2");
         if (isDataFormatIncorrect(stockVO)) {
             throw new DataFormatException(stockVO);
         }
@@ -114,6 +122,7 @@ public class StockServiceImpl implements IStockService {
      * @return StockVO
      */
     @Override
+    @CacheEvict(value = "queryBy", key = "#stockSymbol")
     public StockVO deleteDataBy(String stockSymbol) {
         Optional<Stock> optionalStock = stockDAO.findById(stockSymbol);
         return optionalStock

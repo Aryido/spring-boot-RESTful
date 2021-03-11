@@ -1,6 +1,8 @@
 server:
   port: 8080
 
+debug: true
+
 spring:
   datasource:
     platform: h2
