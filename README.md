@@ -1,3 +1,5 @@
 # spring-boot-RESTful
-To exercise spring-boot-RESTful and unit test. 
-This is version 1.
+To exercise 
+spring-boot-RESTful 
+Unit test. 
+Redis
