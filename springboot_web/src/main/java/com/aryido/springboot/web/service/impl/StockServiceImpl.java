@@ -7,7 +7,6 @@ import com.aryido.springboot.web.exception.DataFormatException;
 import com.aryido.springboot.web.exception.NoDataException;
 import com.aryido.springboot.web.service.IStockService;
 import com.aryido.springboot.web.vo.StockVO;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -18,7 +17,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
@@ -43,12 +41,11 @@ public class StockServiceImpl implements IStockService {
      * @return Collection
      */
     @Override
-    @Cacheable(value = "queryAll")  //cacheManager = "RedisCacheManager"  cacheAutoConfiguration
+    @Cacheable(value = "queryAll")//cacheManager = "RedisCacheManager"  cacheAutoConfiguration
     public Iterable<StockVO> queryAll() {
         System.out.println("from H2");
         Iterable<Stock> stocks = stockDAO.findAll();
-        Stream<Stock> stream = StreamSupport.stream(stocks.spliterator(), false);
-        return stream
+        return StreamSupport.stream(stocks.spliterator(), false)
                 .map(StockServiceImpl::transformEntityToVO)
                 .collect(Collectors.toList());
     }
@@ -77,12 +74,9 @@ public class StockServiceImpl implements IStockService {
         if (isDataFormatIncorrect(stockVO)) {
             throw new DataFormatException(stockVO);
         }
-        stockDAO
-                .findById(stockVO.getStockSymbol())
-                .ifPresent(stock -> {
-                    throw new ConflictException(stockVO);
-                });
-
+        if (stockDAO.findById(stockVO.getStockSymbol()).isPresent()) {
+            throw new ConflictException(stockVO);
+        }
         stockDAO.save(transformVOtoEntity(stockVO));
         return stockVO;
     }
@@ -95,22 +89,23 @@ public class StockServiceImpl implements IStockService {
      */
     @Override
     @CachePut(value = "queryBy", key = "#stockVO.stockSymbol")
+    @CacheEvict(value = "queryAll", allEntries = true)
     public StockVO updateData(StockVO stockVO) {
         System.out.println("from H2");
         if (isDataFormatIncorrect(stockVO)) {
             throw new DataFormatException(stockVO);
         }
+
         Optional<Stock> optionalStock = stockDAO.findById(stockVO.getStockSymbol());
-        optionalStock
-                .ifPresentOrElse(
-                        stock -> {
-                            if (isDataConflict(stock, stockVO)) {
-                                throw new ConflictException(stockVO);
-                            }
-                        },
-                        () -> {
-                            throw new NoDataException(stockVO.getStockSymbol());
-                        });
+
+        if (optionalStock.isPresent()) {
+            if (isDataConflict(optionalStock.get(), stockVO)) {
+                throw new ConflictException(stockVO);
+            }
+        } else {
+            throw new NoDataException(stockVO.getStockSymbol());
+        }
+
         stockDAO.save(transformVOtoEntity(stockVO));
         return stockVO;
     }
@@ -122,15 +117,12 @@ public class StockServiceImpl implements IStockService {
      * @return StockVO
      */
     @Override
-    @CacheEvict(value = "queryBy", key = "#stockSymbol")
+    @CacheEvict(value = {"queryBy", "queryAll"}, key = "#stockSymbol", allEntries = true)
     public StockVO deleteDataBy(String stockSymbol) {
         Optional<Stock> optionalStock = stockDAO.findById(stockSymbol);
-        return optionalStock
-                .map(stock -> {
-                    stockDAO.deleteById(stock.getStockSymbol());
-                    return stock;
-                })
-                .map(StockServiceImpl::transformEntityToVO)
+        optionalStock.ifPresent(stock -> stockDAO.deleteById(stock.getStockSymbol()));
+
+        return optionalStock.map(StockServiceImpl::transformEntityToVO)
                 .orElseThrow(() -> {
                     throw new NoDataException(stockSymbol);
                 });
@@ -157,11 +149,12 @@ public class StockServiceImpl implements IStockService {
      * @return StockVO
      */
     public static StockVO transformEntityToVO(Stock stock) {
-        StockVO stockVO = new StockVO();
-        BeanUtils.copyProperties(stock, stockVO);
-        stockVO.setPrice(Float.parseFloat(stock.getPrice()));
-        stockVO.setVolume(Integer.parseInt(stock.getVolume()));
-        return stockVO;
+        return StockVO.builder()
+                .stockSymbol(stock.getStockSymbol())
+                .companyName(stock.getCompanyName())
+                .price(Float.parseFloat(stock.getPrice()))
+                .volume(Integer.parseInt(stock.getVolume()))
+                .build();
     }
 
     /**
@@ -170,17 +163,16 @@ public class StockServiceImpl implements IStockService {
      * @return Entity
      */
     public static Stock transformVOtoEntity(StockVO stockVO) {
-        Stock stock = new Stock();
-        BeanUtils.copyProperties(stockVO, stock);
-        String price = String.valueOf(stockVO.getPrice());
-        stock.setPrice(price);
-        String volume = String.valueOf(stockVO.getVolume());
-        stock.setVolume(volume);
         Date nowTime = new Date();
         SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String time = ft.format(nowTime);
-        stock.setCreateTime(time);
-        return stock;
+        return Stock.builder()
+                .stockSymbol(stockVO.getStockSymbol())
+                .companyName(stockVO.getCompanyName())
+                .price(String.valueOf(stockVO.getPrice()))
+                .volume(String.valueOf(stockVO.getVolume()))
+                .createTime(time)
+                .build();
     }
 
 }

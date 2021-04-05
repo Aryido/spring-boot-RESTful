@@ -1,0 +1,24 @@
+global:
+  # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+  scrape_interval: 15s
+  # Evaluate rules every 15 seconds. The default is every 1 minute.
+  evaluation_interval: 15s
+  # scrape_timeout is set to the global default (10s).
+
+scrape_configs:
+  - job_name: 'prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: [ 'localhost:9090' ]
+
+  # Prometheus server will sent request to http://192.168.50.78:8080/actuator/prometheus every 5 second
+  - job_name: 'spring-boot-RESTful'
+    # we may use '*' to show all actuator functions
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: [ '192.168.50.78:8080' ]
+
+
+
+

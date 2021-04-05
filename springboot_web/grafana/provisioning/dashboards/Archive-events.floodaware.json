@@ -1,0 +1,924 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "limit": 100,
+        "name": "Annotations & Alerts",
+        "showIn": 0,
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": 1,
+  "iteration": 1617258177442,
+  "links": [],
+  "panels": [
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 13,
+      "panels": [],
+      "title": "雨量站",
+      "type": "row"
+    },
+    {
+      "datasource": "archive-events-json-api-rainfall",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "center",
+            "displayMode": "auto",
+            "filterable": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": []
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 7,
+        "x": 0,
+        "y": 1
+      },
+      "id": 6,
+      "interval": null,
+      "maxDataPoints": null,
+      "options": {
+        "showHeader": false,
+        "sortBy": []
+      },
+      "pluginVersion": "7.4.2",
+      "targets": [
+        {
+          "cacheDurationSeconds": 300,
+          "fields": [
+            {
+              "jsonPath": "$.data",
+              "name": ""
+            }
+          ],
+          "method": "GET",
+          "queryParams": "",
+          "queryType": "randomWalk",
+          "refId": "A",
+          "urlPath": ""
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "雨量站: RainFallStationOrder:${RainFallStationOrder}",
+      "type": "table"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "center",
+            "filterable": false
+          },
+          "mappings": [],
+          "min": 0,
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": []
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "rainfall"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 193
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 7,
+        "x": 7,
+        "y": 1
+      },
+      "id": 3,
+      "interval": null,
+      "maxDataPoints": null,
+      "options": {
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "7.4.2",
+      "targets": [
+        {
+          "cacheDurationSeconds": 600,
+          "fields": [
+            {
+              "jsonPath": "$.data.PiTimeSeriesArray[${RainFallStationOrder}].Events[*].Value",
+              "name": "",
+              "type": "string"
+            },
+            {
+              "jsonPath": "$.data.PiTimeSeriesArray[${RainFallStationOrder}].Events[*].Date",
+              "name": "",
+              "type": "time"
+            }
+          ],
+          "method": "GET",
+          "params": [
+            [
+              "minX",
+              "119.98125"
+            ],
+            [
+              "maxX",
+              "122.04375"
+            ],
+            [
+              "minY",
+              "21.85625"
+            ],
+            [
+              "maxY",
+              "25.34375"
+            ]
+          ],
+          "queryParams": "",
+          "refId": "rainfall",
+          "urlPath": "/${__from:date:YYYY-MM-DDTHH.00.00}/${__to:date:YYYY-MM-DDTHH.00.00}/8"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "transformations": [
+        {
+          "id": "filterByRefId",
+          "options": {}
+        },
+        {
+          "id": "filterByValue",
+          "options": {
+            "filters": [
+              {
+                "config": {
+                  "id": "equal",
+                  "options": {
+                    "value": "-999"
+                  }
+                },
+                "fieldName": "rainfall"
+              }
+            ],
+            "match": "any",
+            "type": "exclude"
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {},
+          "custom": {},
+          "thresholds": {
+            "mode": "absolute",
+            "steps": []
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 3,
+        "x": 20,
+        "y": 1
+      },
+      "id": 17,
+      "links": [
+        {
+          "targetBlank": true,
+          "title": "水利署",
+          "url": "https://www.wra.gov.tw/"
+        }
+      ],
+      "options": {
+        "content": "<a href=\"https://www.wra.gov.tw/\">\r\n    <img src=\"https://upload.wikimedia.org/wikipedia/commons/0/0c/ROC_Water_Resources_Agency_Seal.svg\">\r\n</a>",
+        "mode": "html"
+      },
+      "pluginVersion": "7.4.2",
+      "targets": [
+        {
+          "cacheDurationSeconds": 300,
+          "fields": [
+            {
+              "jsonPath": "",
+              "name": ""
+            }
+          ],
+          "method": "GET",
+          "queryParams": "",
+          "refId": "A",
+          "urlPath": ""
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "aliasColors": {},
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "archive-events-json-api-rainfall",
+      "decimals": 1,
+      "fieldConfig": {
+        "defaults": {
+          "color": {},
+          "custom": {},
+          "thresholds": {
+            "mode": "absolute",
+            "steps": []
+          },
+          "unit": "lengthmm"
+        },
+        "overrides": []
+      },
+      "fill": 2,
+      "fillGradient": 2,
+      "gridPos": {
+        "h": 11,
+        "w": 7,
+        "x": 0,
+        "y": 3
+      },
+      "hiddenSeries": false,
+      "id": 2,
+      "interval": null,
+      "legend": {
+        "alignAsTable": false,
+        "avg": false,
+        "current": false,
+        "hideEmpty": false,
+        "hideZero": false,
+        "max": false,
+        "min": false,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": false,
+      "linewidth": 2,
+      "maxDataPoints": null,
+      "nullPointMode": "connected",
+      "options": {
+        "alertThreshold": false
+      },
+      "percentage": false,
+      "pluginVersion": "7.4.2",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "$$hashKey": "object:622"
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "cacheDurationSeconds": 300,
+          "fields": [
+            {
+              "jsonPath": "",
+              "name": ""
+            }
+          ],
+          "method": "GET",
+          "queryParams": "",
+          "queryType": "randomWalk",
+          "refId": "A",
+          "urlPath": ""
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [
+        {
+          "$$hashKey": "object:683",
+          "colorMode": "blue",
+          "fill": true,
+          "fillColor": "rgba(234, 112, 112, 0.12)",
+          "from": "00:00",
+          "line": false,
+          "lineColor": "rgba(237, 46, 24, 0.60)",
+          "op": "time",
+          "to": "23:59"
+        }
+      ],
+      "timeShift": null,
+      "title": "",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "transformations": [
+        {
+          "id": "filterByValue",
+          "options": {
+            "filters": [
+              {
+                "config": {
+                  "id": "equal",
+                  "options": {
+                    "value": -999
+                  }
+                },
+                "fieldName": "rainfall"
+              }
+            ],
+            "match": "any",
+            "type": "exclude"
+          }
+        }
+      ],
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "min": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:633",
+          "decimals": 1,
+          "format": "lengthmm",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": "0",
+          "show": true
+        },
+        {
+          "$$hashKey": "object:634",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": 1
+      }
+    },
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 14
+      },
+      "id": 11,
+      "panels": [],
+      "title": "水位站",
+      "type": "row"
+    },
+    {
+      "datasource": "archive-events-json-api-waterLevel",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "center",
+            "displayMode": "auto",
+            "filterable": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": []
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 7,
+        "x": 0,
+        "y": 15
+      },
+      "id": 7,
+      "interval": null,
+      "maxDataPoints": null,
+      "options": {
+        "showHeader": false,
+        "sortBy": []
+      },
+      "pluginVersion": "7.4.2",
+      "targets": [
+        {
+          "cacheDurationSeconds": 600,
+          "fields": [
+            {
+              "jsonPath": "$.data.PiTimeSeriesArray[${WaterLevelStationOrder}].Header.LocationId",
+              "name": "",
+              "type": "string"
+            }
+          ],
+          "method": "GET",
+          "params": [
+            [
+              "minX",
+              "119.98125"
+            ],
+            [
+              "maxX",
+              "122.04375"
+            ],
+            [
+              "minY",
+              "21.85625"
+            ],
+            [
+              "maxY",
+              "25.34375"
+            ]
+          ],
+          "queryParams": "",
+          "refId": "rainfall",
+          "urlPath": "/${__from:date:YYYY-MM-DDTHH.00.00}/${__to:date:YYYY-MM-DDTHH.00.00}/8"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "水位站${WaterLevelStationOrder}",
+      "type": "table"
+    },
+    {
+      "datasource": "archive-events-json-api-waterLevel",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "center",
+            "filterable": false
+          },
+          "mappings": [],
+          "min": 0,
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": []
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "rainfall"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": null
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "waterlevel"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 209
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 7,
+        "x": 7,
+        "y": 15
+      },
+      "id": 9,
+      "interval": null,
+      "maxDataPoints": null,
+      "options": {
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "7.4.2",
+      "targets": [
+        {
+          "cacheDurationSeconds": 600,
+          "fields": [
+            {
+              "jsonPath": "$.data.PiTimeSeriesArray[${WaterLevelStationOrder}].Events[*].Value",
+              "name": "",
+              "type": "string"
+            },
+            {
+              "jsonPath": "$.data.PiTimeSeriesArray[${WaterLevelStationOrder}].Events[*].Date",
+              "name": "",
+              "type": "time"
+            }
+          ],
+          "method": "GET",
+          "params": [
+            [
+              "minX",
+              "119.98125"
+            ],
+            [
+              "maxX",
+              "122.04375"
+            ],
+            [
+              "minY",
+              "21.85625"
+            ],
+            [
+              "maxY",
+              "25.34375"
+            ]
+          ],
+          "queryParams": "",
+          "refId": "waterlevel",
+          "urlPath": "/${__from:date:YYYY-MM-DDTHH.00.00}/${__to:date:YYYY-MM-DDTHH.00.00}/8"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "transformations": [
+        {
+          "id": "filterByValue",
+          "options": {
+            "filters": [
+              {
+                "config": {
+                  "id": "equal",
+                  "options": {
+                    "value": "-999"
+                  }
+                },
+                "fieldName": "waterlevel"
+              }
+            ],
+            "match": "any",
+            "type": "exclude"
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {},
+          "custom": {},
+          "thresholds": {
+            "mode": "absolute",
+            "steps": []
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 3,
+        "x": 20,
+        "y": 15
+      },
+      "id": 16,
+      "links": [
+        {
+          "targetBlank": true,
+          "title": "氣象局",
+          "url": "https://www.cwb.gov.tw/V8/C/"
+        }
+      ],
+      "options": {
+        "content": "<a href=\"https://www.cwb.gov.tw/V8/C/\">\n    <img src=\"https://upload.wikimedia.org/wikipedia/commons/a/a9/ROC_Central_Weather_Bureau.svg\">\n</a>\n         ",
+        "mode": "html"
+      },
+      "pluginVersion": "7.4.2",
+      "targets": [
+        {
+          "cacheDurationSeconds": 300,
+          "fields": [
+            {
+              "jsonPath": "",
+              "name": ""
+            }
+          ],
+          "method": "GET",
+          "queryParams": "",
+          "refId": "A",
+          "urlPath": ""
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "type": "text"
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "archive-events-json-api-waterLevel",
+      "decimals": 2,
+      "fieldConfig": {
+        "defaults": {
+          "color": {},
+          "custom": {},
+          "thresholds": {
+            "mode": "absolute",
+            "steps": []
+          },
+          "unit": "lengthm"
+        },
+        "overrides": []
+      },
+      "fill": 4,
+      "fillGradient": 7,
+      "gridPos": {
+        "h": 9,
+        "w": 7,
+        "x": 0,
+        "y": 17
+      },
+      "hiddenSeries": false,
+      "id": 8,
+      "interval": null,
+      "legend": {
+        "alignAsTable": false,
+        "avg": false,
+        "current": false,
+        "hideEmpty": false,
+        "hideZero": false,
+        "max": false,
+        "min": false,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 3,
+      "maxDataPoints": null,
+      "maxPerRow": 2,
+      "nullPointMode": "null as zero",
+      "options": {
+        "alertThreshold": false
+      },
+      "percentage": false,
+      "pluginVersion": "7.4.2",
+      "pointradius": 2,
+      "points": true,
+      "renderer": "flot",
+      "repeat": null,
+      "repeatDirection": "h",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "cacheDurationSeconds": 600,
+          "fields": [
+            {
+              "jsonPath": "$.data.PiTimeSeriesArray[${WaterLevelStationOrder}].Events[*].Value",
+              "name": "",
+              "type": "number"
+            },
+            {
+              "jsonPath": "$.data.PiTimeSeriesArray[${WaterLevelStationOrder}].Events[*].Date",
+              "name": "",
+              "type": "time"
+            }
+          ],
+          "method": "GET",
+          "params": [
+            [
+              "minX",
+              "119.98125"
+            ],
+            [
+              "maxX",
+              "122.04375"
+            ],
+            [
+              "minY",
+              "21.85625"
+            ],
+            [
+              "maxY",
+              "25.34375"
+            ]
+          ],
+          "queryParams": "",
+          "refId": "waterlevel",
+          "urlPath": "/${__from:date:YYYY-MM-DDTHH.00.00}/${__to:date:YYYY-MM-DDTHH.00.00}/8"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [
+        {
+          "$$hashKey": "object:683",
+          "colorMode": "blue",
+          "fill": true,
+          "fillColor": "rgba(234, 112, 112, 0.12)",
+          "from": "00:00",
+          "line": false,
+          "lineColor": "rgba(237, 46, 24, 0.60)",
+          "op": "time",
+          "to": "23:59"
+        }
+      ],
+      "timeShift": null,
+      "title": "",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "transformations": [
+        {
+          "id": "filterByValue",
+          "options": {
+            "filters": [
+              {
+                "config": {
+                  "id": "equal",
+                  "options": {
+                    "value": -999
+                  }
+                },
+                "fieldName": "waterlevel"
+              }
+            ],
+            "match": "any",
+            "type": "exclude"
+          }
+        }
+      ],
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:633",
+          "decimals": 2,
+          "format": "lengthm",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:634",
+          "decimals": 2,
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": "0",
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": 0.1
+      }
+    }
+  ],
+  "refresh": false,
+  "schemaVersion": 27,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "0",
+          "value": "0"
+        },
+        "description": null,
+        "error": null,
+        "hide": 0,
+        "label": null,
+        "name": "RainFallStationOrder",
+        "options": [
+          {
+            "selected": false,
+            "text": "0",
+            "value": "0"
+          }
+        ],
+        "query": "0",
+        "skipUrlSync": false,
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "0",
+          "value": "0"
+        },
+        "description": null,
+        "error": null,
+        "hide": 0,
+        "label": null,
+        "name": "WaterLevelStationOrder",
+        "options": [
+          {
+            "selected": false,
+            "text": "0",
+            "value": "0"
+          }
+        ],
+        "query": "0",
+        "skipUrlSync": false,
+        "type": "textbox"
+      }
+    ]
+  },
+  "time": {
+    "from": "2020-08-31T00:00:00.000Z",
+    "to": "2020-08-31T23:50:00.000Z"
+  },
+  "timepicker": {
+    "hidden": false
+  },
+  "timezone": "",
+  "title": "Archive-events.floodaware",
+  "uid": "kVZs9o8Gk",
+  "version": 115
+}
