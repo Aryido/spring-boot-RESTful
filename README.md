@@ -1,3 +1,8 @@
-# spring-boot-RESTful
-To exercise spring-boot-RESTful and unit test. 
-This is version 1.
+# Exercise project
+
+## Spring-boot-RESTful
+## Unit test
+## Redis catche
+## Grafana
+## Premetheus
+## Docker-compose
