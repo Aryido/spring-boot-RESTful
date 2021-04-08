@@ -24,9 +24,6 @@ services:
     container_name: myprometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yaml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
-      - '--web.console.templates=/usr/share/prometheus/consoles'
     ports:
       - '9090:9090'
     restart: always
@@ -42,3 +39,19 @@ services:
       - ./grafana/provisioning/:/etc/grafana/provisioning/
     container_name: mygrafana
     restart: always
+
+  loki:
+    image: grafana/loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    container_name: myloki
+    
+  promtail:
+    image: grafana/promtail
+    volumes:
+      - ./log:/var/log
+    command: -config.file=/etc/promtail/config.yml
+    container_name: mypromtail
+
+
