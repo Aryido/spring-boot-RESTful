@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value = "/stock", produces = {"application/json; charset=UTF-8"})
 public class StockHandler {
 
+    //http://localhost:8080/swagger-ui.html
+
     @Qualifier("StockServiceImpl")
     private final IStockService stockService;
 

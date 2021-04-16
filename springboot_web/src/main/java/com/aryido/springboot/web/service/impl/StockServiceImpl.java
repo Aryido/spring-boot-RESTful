@@ -7,6 +7,7 @@ import com.aryido.springboot.web.exception.DataFormatException;
 import com.aryido.springboot.web.exception.NoDataException;
 import com.aryido.springboot.web.service.IStockService;
 import com.aryido.springboot.web.vo.StockVO;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
