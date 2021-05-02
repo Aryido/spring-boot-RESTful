@@ -20,22 +20,22 @@ public class RedisConfig extends CachingConfigurerSupport {
 
             @Override
             public void handleCachePutError(RuntimeException exception, Cache cache, Object key, Object value) {
-                log.error("redis异常：key=[{}]", key, exception);
+                log.error("redis exception：key=[{}]", key, exception);
             }
 
             @Override
             public void handleCacheGetError(RuntimeException exception, Cache cache, Object key) {
-                log.error("redis异常：key=[{}]", key, exception);
+                log.error("redis exception：key=[{}]", key, exception);
             }
 
             @Override
             public void handleCacheEvictError(RuntimeException exception, Cache cache, Object key) {
-                log.error("redis异常：key=[{}]", key, exception);
+                log.error("redis exception：key=[{}]", key, exception);
             }
 
             @Override
             public void handleCacheClearError(RuntimeException exception, Cache cache) {
-                log.error("redis异常：", exception);
+                log.error("redis exception：", exception);
             }
         };
 

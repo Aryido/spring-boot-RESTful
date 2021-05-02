@@ -13,7 +13,6 @@ services:
     container_name: myredis
     ports:
       - '6379:6379'
-    restart: always
     command: redis-server /usr/local/etc/redis/redis.conf
 
   prometheus:
@@ -26,7 +25,20 @@ services:
       - '--config.file=/etc/prometheus/prometheus.yaml'
     ports:
       - '9090:9090'
-    restart: always
+
+  promtail:
+    image: grafana/promtail
+    volumes:
+      - ./promtail/promtail-docker-config.yaml:/etc/promtail/docker-config.yaml
+      - ./log/log.log:/var/log/log.log
+    command: -config.file=/etc/promtail/docker-config.yaml
+    container_name: mypromtail
+
+  loki:
+    image: grafana/loki
+    ports:
+      - "3100:3100"
+    container_name: myloki
 
   grafana:
     image: grafana/grafana
@@ -40,18 +52,8 @@ services:
     container_name: mygrafana
     restart: always
 
-  loki:
-    image: grafana/loki
-    ports:
-      - "3100:3100"
-    command: -config.file=/etc/loki/local-config.yaml
-    container_name: myloki
-    
-  promtail:
-    image: grafana/promtail
-    volumes:
-      - ./log:/var/log
-    command: -config.file=/etc/promtail/config.yml
-    container_name: mypromtail
+
+
+
 
 

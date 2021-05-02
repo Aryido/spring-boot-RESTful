@@ -1,0 +1,14 @@
+server:
+  http_listen_port: 9080
+
+clients:
+  - url: http://192.168.1.109:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: springboot
+    static_configs:
+      - targets:
+          - 192.168.1.109
+        labels:
+          job: loki-logback
+          __path__: /var/log/log.log

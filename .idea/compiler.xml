@@ -11,6 +11,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="11">
+      <module name="demo" target="1.5" />
       <module name="springboot_web" target="11" />
     </bytecodeTargetLevel>
   </component>
