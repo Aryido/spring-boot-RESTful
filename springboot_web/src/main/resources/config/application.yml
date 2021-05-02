@@ -2,6 +2,13 @@ server:
   port: 8080
   #debug: true
 
+logging:
+  file:
+    name: springboot_web/log/log.log
+
+
+
+
 spring:
   datasource:
     platform: h2
