@@ -6,7 +6,7 @@ volumes:
 
 services:
   redis:
-    image: redis
+    image: redis:6.2.4-alpine3.13
     volumes:
       - ./redis/conf/redis.conf:/usr/local/etc/redis/redis.conf
       - ./redis/data:/data
@@ -16,7 +16,7 @@ services:
     command: redis-server /usr/local/etc/redis/redis.conf
 
   prometheus:
-    image: prom/prometheus
+    image: prom/prometheus:v2.27.1
     volumes:
       - ./prometheus/:/etc/prometheus/
       - prometheus_data:/prometheus
@@ -27,7 +27,7 @@ services:
       - '9090:9090'
 
   promtail:
-    image: grafana/promtail
+    image: grafana/promtail:k51-8618abc
     volumes:
       - ./promtail/promtail-docker-config.yaml:/etc/promtail/docker-config.yaml
       - ./log/log.log:/var/log/log.log
@@ -35,13 +35,13 @@ services:
     container_name: mypromtail
 
   loki:
-    image: grafana/loki
+    image: grafana/loki:k51-8618abc
     ports:
       - "3100:3100"
     container_name: myloki
 
   grafana:
-    image: grafana/grafana
+    image: grafana/grafana:8.0.1
     depends_on:
       - prometheus
     ports:
@@ -51,6 +51,17 @@ services:
       - ./grafana/provisioning/:/etc/grafana/provisioning/
     container_name: mygrafana
     restart: always
+
+  jenkins:
+    image: jenkins/jenkins:lts-jdk11
+    container_name: myjenkins
+    ports:
+      - 8080:8080
+      - 50000:50000
+    volumes:
+      - ../../../jenkins:/var/jenkins_home # 主機 jenkins庫(自訂)
+      - ../../apache-maven-3.6.3/mavenRepository:/root/.m2 # 主機 Maven 儲存庫至容器內(自訂)
+
 
 
 
