@@ -50,7 +50,6 @@ services:
       - grafana_data:/var/lib/grafana
       - ./grafana/provisioning/:/etc/grafana/provisioning/
     container_name: mygrafana
-    restart: always
 
   jenkins:
     image: jenkins/jenkins:lts-jdk11
