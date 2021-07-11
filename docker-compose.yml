@@ -51,15 +51,36 @@ services:
       - ./grafana/provisioning/:/etc/grafana/provisioning/
     container_name: mygrafana
 
-  jenkins:
-    image: jenkins/jenkins:lts-jdk11
-    container_name: myjenkins
-    ports:
-      - 8080:8080
-      - 50000:50000
-    volumes:
-      - ../../../jenkins:/var/jenkins_home # 主機 jenkins庫(自訂)
-      - ../../apache-maven-3.6.3/mavenRepository:/root/.m2 # 主機 Maven 儲存庫至容器內(自訂)
+  concourse-db:
+    image: postgres:9.6.22
+    environment:
+      POSTGRES_DB: concourse
+      POSTGRES_USER: concourse_user
+      POSTGRES_PASSWORD: concourse_pass
+      PGDATA: ../concourse
+
+  concourse:
+    image:  concourse/concourse:7.3.2
+    command: quickstart
+    privileged: true
+    depends_on: [ concourse-db ]
+    ports: [ "8080:8080" ]
+    environment:
+      CONCOURSE_POSTGRES_HOST: concourse-db
+      CONCOURSE_POSTGRES_USER: concourse_user
+      CONCOURSE_POSTGRES_PASSWORD: concourse_pass
+      CONCOURSE_POSTGRES_DATABASE: concourse
+      CONCOURSE_EXTERNAL_URL: http://localhost:8080
+      CONCOURSE_ADD_LOCAL_USER: test:test
+      CONCOURSE_MAIN_TEAM_LOCAL_USER: test
+      # instead of relying on the default "detect"
+      CONCOURSE_WORKER_BAGGAGECLAIM_DRIVER: overlay
+      CONCOURSE_CLIENT_SECRET: Y29uY291cnNlLXdlYgo=
+      CONCOURSE_TSA_CLIENT_SECRET: Y29uY291cnNlLXdvcmtlcgo=
+      CONCOURSE_X_FRAME_OPTIONS: allow
+      CONCOURSE_CONTENT_SECURITY_POLICY: "*"
+      CONCOURSE_CLUSTER_NAME: tutorial
+      CONCOURSE_WORKER_CONTAINERD_DNS_SERVER: "8.8.8.8"
 
 
 
