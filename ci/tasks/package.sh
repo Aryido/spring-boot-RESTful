@@ -4,5 +4,5 @@
 
 set -e -u -x
 
-cd source-code/
-./mvn package
+cd D:/intelliJDataSource/spring-boot-RESTful/
+./mvnw package

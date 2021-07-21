@@ -12,4 +12,4 @@ jobs:
     trigger: true
   - task: package
     privileged: true
-    file: ./ci/tasks/package.yml
+    file: D:\intelliJDataSource\spring-boot-RESTful/ci/tasks/package.yml

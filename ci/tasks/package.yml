@@ -10,4 +10,4 @@ inputs:
 - name: source-code
 
 run:
-  path: ./ci/tasks/package.sh
+  path: D:\intelliJDataSource\spring-boot-RESTful/ci/tasks/package.sh
