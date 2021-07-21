@@ -1,3 +1,10 @@
+resources:
+  - name: source-code
+    type: git
+    source:
+      uri: https://github.com/Aryido/spring-boot-RESTful.git
+      branch: main
+
 jobs:
 - name: package
   plan:
@@ -5,4 +12,4 @@ jobs:
     trigger: true
   - task: package
     privileged: true
-    file: source-code/ci/tasks/package.yml
+    file: ./ci/tasks/package.yml
