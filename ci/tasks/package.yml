@@ -10,4 +10,5 @@ inputs:
 - name: source-code
 
 run:
-  path: D:\intelliJDataSource\spring-boot-RESTful/ci/tasks/package.sh
+  path: "mvn"
+  args: ["-f", "D:\intelliJDataSource\spring-boot-RESTful\pom.xml", "test"]
