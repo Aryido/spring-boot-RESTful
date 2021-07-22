@@ -1,4 +1,3 @@
----
 resources:
   - name: concourse-docs-git
     type: git
@@ -22,4 +21,15 @@ jobs:
             source: { repository: busybox }
           run:
             path: ls
-            args: [ "-la", "./ci" ]
+            args: ["-la","./concourse-docs-git"]
+      - task: mvn-test
+        config:
+          inputs:
+            - name: concourse-docs-git
+          platform: linux
+          image_resource:
+            type: registry-image
+            source: { repository: maven }
+          run:
+            path: mvn
+            args: ["-f","./concourse-docs-git/pom.xml","test"]
