@@ -4,7 +4,7 @@ resources:
     type: git
     icon: github
     source:
-      uri: D:\intelliJDataSource\spring-boot-RESTful\.git
+      uri: https://github.com/Aryido/spring-boot-RESTful.git
 
 jobs:
   - name: job
@@ -22,4 +22,4 @@ jobs:
             source: { repository: busybox }
           run:
             path: ls
-            args: [ "-la", "./concourse-docs-git" ]
+            args: [ "-la", "./ci" ]
