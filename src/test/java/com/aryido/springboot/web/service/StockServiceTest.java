@@ -74,7 +74,7 @@ public class StockServiceTest {
     @Test
     void testQueryBy() {
         //expected output
-        StockVO expectedStockVO = new StockVO("3711", "日月光", 80.4f, 146);
+        StockVO expectedStockVO = new StockVO("3711", "123", 80.4f, 146);
 
         //executed queryBy() by inputting "3711"
         StockVO stockVO = stockService.queryBy("3711");
