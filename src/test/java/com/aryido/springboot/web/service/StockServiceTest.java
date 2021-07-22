@@ -74,7 +74,7 @@ public class StockServiceTest {
     @Test
     void testQueryBy() {
         //expected output
-        StockVO expectedStockVO = new StockVO("3711", "日月光123", 80.4f, 146);
+        StockVO expectedStockVO = new StockVO("3711", "日月光", 80.4f, 146);
 
         //executed queryBy() by inputting "3711"
         StockVO stockVO = stockService.queryBy("3711");
@@ -168,7 +168,6 @@ public class StockServiceTest {
 
         //executed deleteDataBy() by inputting "3711"
         StockVO deletedStockVO = stockService.deleteDataBy("3711");
-        Assertions.assertFalse(Objects.isNull(expectedStockVO));
         Assertions.assertAll(
                 () -> Assertions.assertEquals(expectedStockVO.getStockSymbol(), deletedStockVO.getStockSymbol(), "stockSymbol failed."),
                 () -> Assertions.assertEquals(expectedStockVO.getCompanyName(), deletedStockVO.getCompanyName(), "CompanyName failed."),

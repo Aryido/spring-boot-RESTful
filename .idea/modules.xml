@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/springboot_web.iml" filepath="$PROJECT_DIR$/springboot_web.iml" />
-      <module fileurl="file://$PROJECT_DIR$/test.iml" filepath="$PROJECT_DIR$/test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/spring-boot-RESTful.iml" filepath="$PROJECT_DIR$/spring-boot-RESTful.iml" />
     </modules>
   </component>
 </project>

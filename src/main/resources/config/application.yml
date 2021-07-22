@@ -4,7 +4,7 @@ server:
 
 logging:
   file:
-    name: springboot_web/log/log.log
+    name: log/log.log
 
 spring:
   datasource:
