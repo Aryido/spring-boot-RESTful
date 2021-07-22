@@ -1,6 +1,0 @@
-resources:
-- name: source-code
-  type: git
-  source:
-    uri: https://github.com/Aryido/spring-boot-RESTful.git
-    branch: main
