@@ -1,11 +1,19 @@
 # Exercise project
 
-## Spring-boot-RESTful
-## Unit test
-## Redis catche
-## Grafana
-## Premetheus
-## Docker-compose
-## Grafana loki
-## Concourse CI
+## Maven Project
 
+## Spring-boot-RESTful
+
+## Unit test
+
+## Redis catche
+
+## Grafana
+
+## Premetheus
+
+## Docker-compose
+
+## Grafana loki
+
+## Concourse CI
