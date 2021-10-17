@@ -1,10 +1,5 @@
 server:
   port: 8087
-  #debug: true
-
-logging:
-  file:
-    name: log/log.log
 
 spring:
   datasource:
@@ -42,7 +37,7 @@ spring:
         min-idle: 0
 
   application:
-    name: monitoring-prometheus-grafana
+    name: spring-boot-RESTful
 
 management:
   endpoints:

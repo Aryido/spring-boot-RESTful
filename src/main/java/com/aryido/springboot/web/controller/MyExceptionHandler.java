@@ -3,6 +3,7 @@ package com.aryido.springboot.web.controller;
 import com.aryido.springboot.web.exception.ConflictException;
 import com.aryido.springboot.web.exception.DataFormatException;
 import com.aryido.springboot.web.exception.NoDataException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -20,6 +21,7 @@ import java.util.Map;
  *
  * @author YunYang LEE
  */
+@Slf4j
 @ControllerAdvice
 public class MyExceptionHandler {
 
@@ -33,6 +35,7 @@ public class MyExceptionHandler {
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     @ResponseBody
     public Map<String, Object> handleException_NoDataException(NoDataException noDataExceptionObj) {
+        log.error("NoDataException");
         return new HashMap<>() {
             {
                 put("Time", nowTimeFormatFunction());
@@ -53,6 +56,7 @@ public class MyExceptionHandler {
     @ResponseStatus(value = HttpStatus.METHOD_NOT_ALLOWED)
     @ResponseBody
     public Map<String, Object> handleException_DataFormatException(DataFormatException dataFormatExceptionObj) {
+        log.error("DataFormatException");
         return new HashMap<>() {
             {
                 put("Time", nowTimeFormatFunction());
@@ -73,6 +77,7 @@ public class MyExceptionHandler {
     @ResponseStatus(value = HttpStatus.CONFLICT)
     @ResponseBody
     public Map<String, Object> handleException_ConflictException(ConflictException conflictExceptionObj) {
+        log.error("ConflictException");
         return new HashMap<>() {
             {
                 put("Time", nowTimeFormatFunction());

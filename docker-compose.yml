@@ -1,12 +1,9 @@
 version: '3.7'
 
-volumes:
-  prometheus_data: { }
-  grafana_data: { }
-
 services:
   redis:
     image: redis:6.2.4-alpine3.13
+    hostname: redis
     volumes:
       - ./redis/conf/redis.conf:/usr/local/etc/redis/redis.conf
       - ./redis/data:/data
@@ -17,50 +14,66 @@ services:
 
   prometheus:
     image: prom/prometheus:v2.27.1
+    hostname: prometheus
     volumes:
       - ./prometheus/:/etc/prometheus/
-      - prometheus_data:/prometheus
     container_name: myprometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yaml'
     ports:
       - '9090:9090'
 
-  promtail:
-    image: grafana/promtail:k51-8618abc
+  fluentd-aggregator:
+    image: grafana/fluent-bit-plugin-loki:2.3.0-amd64
+    hostname: fluentd-aggregator
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+    environment:
+      LOKI_URL: http://loki:3100/loki/api/v1/push
     volumes:
-      - ./promtail/promtail-docker-config.yaml:/etc/promtail/docker-config.yaml
-      - ./log/log.log:/var/log/log.log
-    command: -config.file=/etc/promtail/docker-config.yaml
-    container_name: mypromtail
+      - ./fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+    networks:
+      - loki
 
   loki:
-    image: grafana/loki:k51-8618abc
+    image: grafana/loki:2.3.0
+    hostname: loki
     ports:
       - "3100:3100"
     container_name: myloki
+    networks:
+      - loki
 
   grafana:
-    image: grafana/grafana:8.0.1
+    image: grafana/grafana:8.1.5
+    hostname: grafana
     depends_on:
       - prometheus
     ports:
       - 3000:3000
+    environment:
+      GF_INSTALL_PLUGINS: "grafana-piechart-panel 1.6.2"
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
     volumes:
-      - grafana_data:/var/lib/grafana
       - ./grafana/provisioning/:/etc/grafana/provisioning/
     container_name: mygrafana
+    networks:
+      - grafana
+      - loki
 
   concourse-db:
     image: postgres:9.6.22
+    hostname: concourse-db
     environment:
       POSTGRES_DB: concourse
       POSTGRES_USER: concourse_user
       POSTGRES_PASSWORD: concourse_pass
-      PGDATA: ../concourse
 
   concourse:
-    image:  concourse/concourse:7.3.2
+    image: concourse/concourse:7.3.2
+    hostname: concourse
     command: quickstart
     privileged: true
     depends_on: [ concourse-db ]
@@ -82,6 +95,13 @@ services:
       CONCOURSE_CLUSTER_NAME: tutorial
       CONCOURSE_WORKER_CONTAINERD_DNS_SERVER: "8.8.8.8"
 
+networks:
+  grafana:
+    name: grafana
+    driver: bridge
+  loki:
+    name: loki
+    driver: bridge
 
 
 

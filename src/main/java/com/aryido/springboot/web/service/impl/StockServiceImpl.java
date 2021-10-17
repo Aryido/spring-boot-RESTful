@@ -76,11 +76,9 @@ public class StockServiceImpl implements IStockService {
     public StockVO addData(StockVO stockVO) {
         log.info("from H2");
         if (isDataFormatIncorrect(stockVO)) {
-            log.info("DataFormatException");
             throw new DataFormatException(stockVO);
         }
         if (stockDAO.findById(stockVO.getStockSymbol()).isPresent()) {
-            log.info("ConflictException");
             throw new ConflictException(stockVO);
         }
         stockDAO.save(transformVOtoEntity(stockVO));
@@ -99,7 +97,6 @@ public class StockServiceImpl implements IStockService {
     public StockVO updateData(StockVO stockVO) {
         log.info("from H2");
         if (isDataFormatIncorrect(stockVO)) {
-            log.info("DataFormatException");
             throw new DataFormatException(stockVO);
         }
 
@@ -107,11 +104,9 @@ public class StockServiceImpl implements IStockService {
 
         if (optionalStock.isPresent()) {
             if (isDataConflict(optionalStock.get(), stockVO)) {
-                log.info("ConflictException");
                 throw new ConflictException(stockVO);
             }
         } else {
-            log.info("NoDataException");
             throw new NoDataException(stockVO.getStockSymbol());
         }
 
@@ -132,10 +127,7 @@ public class StockServiceImpl implements IStockService {
         optionalStock.ifPresent(stock -> stockDAO.deleteById(stock.getStockSymbol()));
 
         return optionalStock.map(StockServiceImpl::transformEntityToVO)
-                .orElseThrow(() -> {
-                    log.info("NoDataException");
-                    throw new NoDataException(stockSymbol);
-                });
+                .orElseThrow(() -> new NoDataException(stockSymbol));
     }
 
     public static boolean isDataFormatIncorrect(StockVO stockObj) {

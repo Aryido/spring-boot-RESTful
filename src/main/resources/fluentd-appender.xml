@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+Fluentd appender logback configuration provided for import
+-->
+
+<included>
+    <property name="APP_FIELD" value="${APP_KEY:-app}"/>
+    <property name="APP_VALUE" value="${APP_NAME:-application}"/>
+    <property name="TAG" value="${TAG_NAME:-debug}"/>
+    <property name="LABEL" value="${LABEL_NAME:-logback}"/>
+    <property name="HOST" value="${FLUENTD_HOST:-localhost}"/>
+    <property name="PORT" value="${FLUENTD_PORT:-24224}"/>
+
+    <appender name="FLUENTD" class="ch.qos.logback.more.appenders.DataFluentAppender">
+        <tag>${TAG}</tag>
+        <label>${LABEL}</label>
+        <remoteHost>${HOST}</remoteHost>
+        <port>${PORT}</port>
+        <additionalField>
+            <key>${APP_FIELD}</key>
+            <value>${APP_NAME}</value>
+        </additionalField>
+    </appender>
+</included>

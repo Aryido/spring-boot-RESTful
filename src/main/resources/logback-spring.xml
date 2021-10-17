@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration>
+<configuration scan="true">
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+    <include resource="fluentd-appender.xml"/>
+    <include resource="file-appender.xml"/>
+
+    <property name="APP_NAME" value="@project.groupId@.@project.artifactId@.@project.version@"/>
+    <property name="LOG_FILE" value="./log/log.log"/>
+
+    <contextName>${APP_NAME}</contextName>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="FLUENTD"/>
+    </root>
+
+</configuration>
